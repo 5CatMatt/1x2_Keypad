@@ -20,17 +20,39 @@ int lastButtonStateA = HIGH;
 int lastButtonStateB = HIGH;
 int lastButtonStateR = HIGH;
 
-// Softer but visibly colored pastels
-uint32_t pastelBlue    = 0; 
-uint32_t pastelGreen   = 0;
-uint32_t pastelRed     = 0;
-uint32_t pastelPurple  = 0;
-uint32_t pastelYellow  = 0;
-uint32_t pastelOrange  = 0;
-uint32_t pastelCyan    = 0;
-uint32_t pastelMagenta = 0;
-uint32_t pastelWhite   = 0;
-uint32_t pastelOff     = 0;
+// Colors (now using strip.Color)
+uint32_t blueMid;
+uint32_t greenBright;
+uint32_t greenMid;
+uint32_t grey;
+uint32_t lightGrey;
+uint32_t mintLight;
+uint32_t red;
+uint32_t green;
+uint32_t blue;
+uint32_t lightPurple;
+uint32_t yellow;
+uint32_t darkYellow;
+uint32_t teal;
+uint32_t orange;
+uint32_t dullRed;
+uint32_t FOLDER;
+uint32_t FOX;
+uint32_t EDIT;
+uint32_t CALC;
+uint32_t colorOff;
+
+uint32_t defaultColorA;
+uint32_t defaultColorB;
+
+uint32_t pressedColorA;
+uint32_t pressedColorB;
+
+uint8_t brightness = 176; // 0-255
+
+uint8_t buttonA = 0;
+uint8_t buttonB = 1;
+uint8_t buttonR = 2;
 
 void setup() {
   pinMode(BUTTON_A_PIN, INPUT_PULLUP);
@@ -38,30 +60,47 @@ void setup() {
   pinMode(BUTTON_RESET, INPUT_PULLUP);
 
   strip.begin();
-  strip.setBrightness(100); // Scale 0-255 (reduce glare, keep colors visible)
+  strip.setBrightness(brightness);
 
-  // Better pastel definitions (not too white)
-  pastelBlue    = strip.Color(80, 150, 255);   // pastel blue
-  pastelGreen   = strip.Color(120, 255, 150);  // pastel green
-  pastelRed     = strip.Color(255, 100, 120);  // pastel pink/red
-  pastelPurple  = strip.Color(190, 90, 255);   // pastel purple
-  pastelYellow  = strip.Color(255, 220, 120);  // soft yellow
-  pastelOrange  = strip.Color(255, 170, 100);  // soft orange
-  pastelCyan    = strip.Color(100, 255, 230);  // cyan
-  pastelMagenta = strip.Color(255, 120, 200);  // magenta
-  pastelWhite   = strip.Color(200, 200, 200);  // off-white
-  pastelOff     = strip.Color(0, 0, 0);        // off
+  // Define colors
+  blueMid      = strip.Color(0, 17, 65);
+  greenBright  = strip.Color(0, 128, 0);
+  greenMid     = strip.Color(0, 42, 5);
+  grey         = strip.Color(5, 5, 5);
+  lightGrey    = strip.Color(12, 20, 20);
+  mintLight    = strip.Color(28, 74, 44);
+  red          = strip.Color(75, 5, 5);
+  green        = strip.Color(5, 75, 5);
+  blue         = strip.Color(5, 5, 75);
+  lightPurple  = strip.Color(35, 35, 95);
+  yellow       = strip.Color(45, 45, 5);
+  darkYellow   = strip.Color(15, 15, 5);
+  teal         = strip.Color(5, 35, 25);
+  orange       = strip.Color(100, 50, 0);
+  dullRed      = strip.Color(26, 0, 0);
+  FOLDER       = strip.Color(95, 77, 28);
+  FOX          = strip.Color(200, 54, 8);
+  EDIT         = strip.Color(50, 115, 25);
+  CALC         = strip.Color(53, 56, 59);
+  colorOff     = strip.Color(0, 0, 0);
 
-  // Initial colors
-  strip.setPixelColor(0, pastelBlue);
-  strip.setPixelColor(1, pastelGreen);
+  // Assign defaults
+  defaultColorA = blueMid;
+  defaultColorB = green;
+
+  pressedColorA = red;
+  pressedColorB = orange;
+
+  // Initial state
+  strip.setPixelColor(buttonA, defaultColorA);
+  strip.setPixelColor(buttonB, defaultColorB);
   strip.show();
 }
 
 void loop() {
-  handleButton(BUTTON_A_PIN, lastButtonStateA, lastDebounceTimeA, 0);
-  handleButton(BUTTON_B_PIN, lastButtonStateB, lastDebounceTimeB, 1);
-  handleButton(BUTTON_RESET, lastButtonStateR, lastDebounceTimeR, 2);
+  handleButton(BUTTON_A_PIN, lastButtonStateA, lastDebounceTimeA, buttonA);
+  handleButton(BUTTON_B_PIN, lastButtonStateB, lastDebounceTimeB, buttonB);
+  handleButton(BUTTON_RESET, lastButtonStateR, lastDebounceTimeR, buttonR);
 }
 
 void handleButton(int pin, int &lastState, unsigned long &lastTime, int buttonID) {
@@ -73,29 +112,25 @@ void handleButton(int pin, int &lastState, unsigned long &lastTime, int buttonID
 
   if ((millis() - lastTime) > debounceDelay) {
     if (reading == LOW) {
-      switch (buttonID) {
-        case 0: // Button A pressed
-          strip.setPixelColor(0, pastelRed);
-          break;
-
-        case 1: // Button B pressed
-          strip.setPixelColor(1, pastelPurple);
-          break;
-
-        case 2: // Reset pressed -> ALL OFF
-          strip.setPixelColor(0, pastelOff);
-          strip.setPixelColor(1, pastelOff);
-          break;
+      // Button pressed
+      if (buttonID == buttonA) {
+        strip.setPixelColor(buttonA, pressedColorA);
+      } else if (buttonID == buttonB) {
+        strip.setPixelColor(buttonB, pressedColorB);
+      } else if (buttonID == buttonR) {
+        strip.setPixelColor(buttonA, colorOff);
+        strip.setPixelColor(buttonB, colorOff);
       }
       strip.show();
     } else {
-      // Release actions (but not reset!)
-      if (buttonID == 0) strip.setPixelColor(0, pastelBlue);
-      if (buttonID == 1) strip.setPixelColor(1, pastelGreen);
-      if (buttonID == 2) {
-        // On reset release → restore defaults
-        strip.setPixelColor(0, pastelBlue);
-        strip.setPixelColor(1, pastelGreen);
+      // Button released
+      if (buttonID == buttonA) {
+        strip.setPixelColor(buttonA, defaultColorA);
+      } else if (buttonID == buttonB) {
+        strip.setPixelColor(buttonB, defaultColorB);
+      } else if (buttonID == buttonR) {
+        strip.setPixelColor(buttonA, defaultColorA);
+        strip.setPixelColor(buttonB, defaultColorB);
       }
       strip.show();
     }
