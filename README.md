@@ -69,3 +69,72 @@ switch (currentMode) {
     if (buttonID == buttonB) Keyboard.press(KEY_LEFT_CTRL); Keyboard.press('s');
     break;
 }
+```
+
+### 2. NeoPixel Colors
+
+Each mode has its own default and pressed colors:
+
+```cpp
+struct ModeConfig {
+  uint32_t colorA_default;
+  uint32_t colorA_pressed;
+  uint32_t colorB_default;
+  uint32_t colorB_pressed;
+};
+```
+
+Example use:
+
+```cpp
+modes[0] = { blueMid, red, green, orange };   // Mode 0
+modes[1] = { yellow, teal, purple, red };     // Mode 1
+```
+
+### 3. Key Repeat Suppression
+
+Adjust keyRepeatDelay (in milliseconds) to control how fast the same button can be triggered repeatedly:
+
+```cpp
+const unsigned long keyRepeatDelay = 500; // 0 = one-shot only
+```
+
+### 4. Button Debounce
+
+Adjust debounceDelay for mechanical button stability:
+
+```cpp
+const unsigned long debounceDelay = 50; // ms
+```
+
+## Wiring Diagram
+
+```pgsql
+          +5V ----+
+                   |
+                  [ ] Button A (pin 5)
+                   |
+GND --------------+
+                   
+          +5V ----+
+                   |
+                  [ ] Button B (pin 6)
+                   |
+GND --------------+
+
+          +5V ----+
+                   |
+                  [ ] Reset (pin 2)
+                   |
+GND --------------+
+
+NeoPixel 1 Data --> Pin 3
+NeoPixel 2 Data --> Pin 3 (shared)
+GND ------------> GND
++5V ------------> VCC (5V)
+```
+
+## License
+
+MIT License – free to use, modify, and distribute.
+
