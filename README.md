@@ -31,6 +31,33 @@ This project turns an **Arduino Pro Micro** into a small programmable **macro ke
 | Button Reset   | 2           |
 | NeoPixel Data  | 3           |
 
+## Wiring Diagram
+
+```pgsql
+          +5V ----+
+                   |
+                  [ ] Button A (pin 5)
+                   |
+GND --------------+
+                   
+          +5V ----+
+                   |
+                  [ ] Button B (pin 6)
+                   |
+GND --------------+
+
+          +5V ----+
+                   |
+                  [ ] Reset (pin 2)
+                   |
+GND --------------+
+
+NeoPixel 1 Data --> Pin 3
+NeoPixel 2 Data --> Pin 3 (shared)
+GND ------------> GND
++5V ------------> VCC (5V)
+```
+
 ---
 
 ## Software
@@ -105,33 +132,6 @@ Adjust debounceDelay for mechanical button stability:
 
 ```cpp
 const unsigned long debounceDelay = 50; // ms
-```
-
-## Wiring Diagram
-
-```pgsql
-          +5V ----+
-                   |
-                  [ ] Button A (pin 5)
-                   |
-GND --------------+
-                   
-          +5V ----+
-                   |
-                  [ ] Button B (pin 6)
-                   |
-GND --------------+
-
-          +5V ----+
-                   |
-                  [ ] Reset (pin 2)
-                   |
-GND --------------+
-
-NeoPixel 1 Data --> Pin 3
-NeoPixel 2 Data --> Pin 3 (shared)
-GND ------------> GND
-+5V ------------> VCC (5V)
 ```
 
 ## License
