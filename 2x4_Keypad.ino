@@ -37,8 +37,8 @@ void setup() {
   off           = strip.Color(0, 0, 0);
 
   // Now that colors exist, configure modes
-  modes[0] = { blueMid, red, green, orange };   // Mode 0: Copy / Paste
-  modes[1] = { yellow, teal, lightPurple, red };     // Mode 1: Find / Save
+  modes[0] = { blueMid, red, green, orange };       // Mode 0: Copy / Paste
+  modes[1] = { yellow, teal, lightPurple, red };    // Mode 1: Find / Save
 
   // Set initial mode colors
   applyModeColors();
@@ -63,33 +63,44 @@ void handleButton(int pin, int &lastState, unsigned long &lastTime, int buttonID
 
   if ((millis() - lastTime) > debounceDelay) {
     if (reading == LOW) {
+      
       // Button pressed
       if (buttonID == buttonA) {
-        strip.setPixelColor(buttonA, modes[currentMode].colorA_pressed);
-        if (millis() - lastKeyTimeA > keyRepeatDelay) {
+        if (!buttonLatchA) {
+          buttonLatchA = true;
+          strip.setPixelColor(buttonA, modes[currentMode].colorA_pressed);
           performAction(buttonA);
           lastKeyTimeA = millis();
         }
       } 
       else if (buttonID == buttonB) {
-        strip.setPixelColor(buttonB, modes[currentMode].colorB_pressed);
-        if (millis() - lastKeyTimeB > keyRepeatDelay) {
-          performAction(buttonB);
-          lastKeyTimeB = millis();
+        if (!buttonLatchB) {
+          buttonLatchB = true;
+          strip.setPixelColor(buttonB, modes[currentMode].colorB_pressed);
+          if (millis() - lastKeyTimeB > keyRepeatDelay) {
+            performAction(buttonB);
+            lastKeyTimeB = millis();
+          }
         }
       } 
       else if (buttonID == buttonR) {
-        // Cycle mode
-        currentMode = (currentMode + 1) % totalModes;
-        applyModeColors();
+        if (!buttonLatchR) {
+          buttonLatchR = true;
+          currentMode = (currentMode + 1) % totalModes;
+          applyModeColors();
+        }
       }
       strip.show();
     } else {
       // Button released → restore defaults
       if (buttonID == buttonA) {
+        buttonLatchA = false;
         strip.setPixelColor(buttonA, modes[currentMode].colorA_default);
       } else if (buttonID == buttonB) {
+        buttonLatchB = false;
         strip.setPixelColor(buttonB, modes[currentMode].colorB_default);
+      } else if (buttonID == buttonR) {
+        buttonLatchR = false;
       }
       strip.show();
     }

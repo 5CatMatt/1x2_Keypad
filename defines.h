@@ -11,16 +11,20 @@
 unsigned long lastDebounceTimeA = 0;
 unsigned long lastDebounceTimeB = 0;
 unsigned long lastDebounceTimeR = 0;
-const unsigned long debounceDelay = 50;
+const unsigned long debounceDelay = 10;
 
 // Key repeat suppression
 unsigned long lastKeyTimeA = 0;
 unsigned long lastKeyTimeB = 0;
-const unsigned long keyRepeatDelay = 300; // ms, tweakable
+const unsigned long keyRepeatDelay = 0; // ms, tweakable
 
 int lastButtonStateA = HIGH;
 int lastButtonStateB = HIGH;
 int lastButtonStateR = HIGH;
+
+bool buttonLatchA = false;
+bool buttonLatchB = false;
+bool buttonLatchR = false;
 
 // Button IDs
 uint8_t buttonA = 0;
