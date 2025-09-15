@@ -16,7 +16,7 @@ const unsigned long debounceDelay = 10;
 // Key repeat suppression
 unsigned long lastKeyTimeA = 0;
 unsigned long lastKeyTimeB = 0;
-const unsigned long keyRepeatDelay = 0; // ms, tweakable
+const unsigned long keyRepeatDelay = 0;
 
 int lastButtonStateA = HIGH;
 int lastButtonStateB = HIGH;
